@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_flutter/UI/auth/login_with_phone.dart';
 import 'package:firebase_flutter/UI/auth/post/post_screen.dart';
@@ -7,6 +8,8 @@ import 'package:firebase_flutter/utils/utils.dart';
 import 'package:firebase_flutter/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -154,7 +157,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text('Login with Phone Number'),
                   ),
                 ),
-              )
+              ),
+              SizedBox(height: 30),
+
+              RoundButton(
+                title: 'Sign in with Google',
+                icon: FontAwesomeIcons.google,
+                loading: loading,
+                onTap: () {
+                  logInWithGoogle();
+                },
+              ),
             ],
           ),
         ),
@@ -202,5 +215,43 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       },
     );
+  }
+
+  void logInWithGoogle() async {
+    setState(() {
+      loading = true;
+    });
+
+    final googleSignIn = GoogleSignIn(scopes: ['email']);
+
+    try {
+      final googleSignInAccount = await googleSignIn.signIn();
+
+      if (googleSignInAccount == null) {
+        setState(() {
+          loading = false;
+        });
+        return null;
+      } else {
+        final googleSignInAuth = await googleSignInAccount.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+            accessToken: googleSignInAuth.accessToken,
+            idToken: googleSignInAuth.idToken);
+
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+        await FirebaseFirestore.instance.collection('gusers').add({
+          'email': googleSignInAccount.email,
+          'imageUrl': googleSignInAccount.photoUrl,
+          'name': googleSignInAccount.displayName,
+        });
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => PostScreen()));
+      }
+    } catch (e) {
+      Utils().toastMessage(e.toString());
+    }
   }
 }

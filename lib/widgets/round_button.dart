@@ -4,11 +4,13 @@ class RoundButton extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool loading;
+  final IconData? icon;
   RoundButton({
     super.key,
     required this.title,
     required this.onTap,
     this.loading = false,
+    this.icon,
   });
 
   @override
@@ -26,9 +28,19 @@ class RoundButton extends StatelessWidget {
                   strokeWidth: 3,
                   color: Colors.white,
                 )
-              : Text(
-                  title,
-                  style: TextStyle(color: Colors.white),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 14),
+                    Text(
+                      title,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
                 ),
         ),
       ),
