@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:firebase_flutter/Providers/theme_providers.dart';
 import 'package:firebase_flutter/UI/Firestore/create_firestore.dart';
 import 'package:firebase_flutter/UI/auth/login_screen.dart';
 import 'package:firebase_flutter/UI/auth/post/add_post_screen.dart';
 import 'package:firebase_flutter/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ReadFirestorePost extends StatefulWidget {
   const ReadFirestorePost({super.key});
@@ -32,6 +34,10 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
 
   @override
   Widget build(BuildContext context) {
+    // Provider for theme:
+
+    final themeChanger = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Firestore Post Screen'),
@@ -62,6 +68,23 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 12),
+
+          RadioListTile<ThemeMode>(
+            title: Text('Light Mode'),
+            value: ThemeMode.light,
+            groupValue: themeChanger.themeMode,
+            onChanged: themeChanger.setTheme,
+          ),
+
+          RadioListTile<ThemeMode>(
+            title: Text('Dark Theme'),
+            value: ThemeMode.dark,
+            groupValue: themeChanger.themeMode,
+            onChanged: themeChanger.setTheme,
+          ),
+
+          // final themeChanger =  Provider.of(context);
           SizedBox(height: 12),
 
           // Read data using FirebaseAnimatedList:

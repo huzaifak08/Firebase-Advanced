@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_flutter/UI/Firestore/read_firestore.dart';
 import 'package:firebase_flutter/UI/auth/login_with_phone.dart';
 import 'package:firebase_flutter/UI/auth/post/post_screen.dart';
 import 'package:firebase_flutter/UI/auth/signup_screen.dart';
@@ -58,117 +59,119 @@ class _LoginScreenState extends State<LoginScreen> {
           title: Text('Login Screen'),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Use TextFields inside the Form to handle empty Text Fields:
-              Form(
-                key: _formKey,
-                child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Use TextFields inside the Form to handle empty Text Fields:
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          label: Text('Enter Email'),
+                          helperText: 'someone@gmail.com',
+                          prefixIcon: Icon(Icons.email_outlined),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Enter Your Email';
+                          } else
+                            null;
+                        },
+                      ),
+                      SizedBox(height: 12),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          label: Text('Enter Password'),
+                          prefixIcon: Icon(Icons.password_outlined),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Enter Your Password';
+                          } else
+                            null;
+                        },
+                      ),
+                      SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+                RoundButton(
+                  title: 'Login',
+                  loading: loading,
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Login Method of Firebase:
+                      login();
+                    }
+                  },
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPasswordScreen()));
+                      },
+                      child: Text('Forgot Password ?')),
+                ),
+                SizedBox(height: 12),
+                Row(
                   children: [
-                    TextFormField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        label: Text('Enter Email'),
-                        helperText: 'someone@gmail.com',
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Enter Your Email';
-                        } else
-                          null;
+                    Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignupScreen(),
+                            ));
                       },
+                      child: Text('Sign Up'),
                     ),
-                    SizedBox(height: 12),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        label: Text('Enter Password'),
-                        prefixIcon: Icon(Icons.password_outlined),
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Enter Your Password';
-                        } else
-                          null;
-                      },
-                    ),
-                    SizedBox(height: 12),
                   ],
                 ),
-              ),
-              RoundButton(
-                title: 'Login',
-                loading: loading,
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Login Method of Firebase:
-                    login();
-                  }
-                },
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ForgotPasswordScreen()));
-                    },
-                    child: Text('Forgot Password ?')),
-              ),
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Text("Don't have an account?"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignupScreen(),
-                          ));
-                    },
-                    child: Text('Sign Up'),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginWithPhone()));
-                },
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
+                SizedBox(height: 30),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginWithPhone()));
+                  },
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.circular(23),
                     ),
-                    borderRadius: BorderRadius.circular(23),
-                  ),
-                  child: Center(
-                    child: Text('Login with Phone Number'),
+                    child: Center(
+                      child: Text('Login with Phone Number'),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 30),
+                SizedBox(height: 30),
 
-              RoundButton(
-                title: 'Sign in with Google',
-                icon: FontAwesomeIcons.google,
-                loading: loading,
-                onTap: () {
-                  logInWithGoogle();
-                },
-              ),
-            ],
+                RoundButton(
+                  title: 'Sign in with Google',
+                  icon: FontAwesomeIcons.google,
+                  loading: loading,
+                  onTap: () {
+                    logInWithGoogle();
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -195,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PostScreen(),
+              builder: (context) => ReadFirestorePost(),
             ));
 
         // When Sign in Completes then stop Loading:
@@ -247,8 +250,8 @@ class _LoginScreenState extends State<LoginScreen> {
           'name': googleSignInAccount.displayName,
         });
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => PostScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ReadFirestorePost()));
       }
     } catch (e) {
       Utils().toastMessage(e.toString());
